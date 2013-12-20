@@ -1,0 +1,15 @@
+temp file Name: /tmp/SEQAN.XXXXXXXXXXXXXXaYqsry/test_file
+outputFormat: 0
+Average methylation rate in CG context: 0.188747
+Average methylation rate in CHG context: 0.180228
+Average methylation rate in CHH context: 0.18977
+  Time needed for all: 0.00715902min
+  Time needed for doBsCalling: 0.00158045min
+  Time needed for optimization: 0.00052857min
+  Time needed for IO: 0.00167654min
+  Time needed for convertPairwiseToGlobal: 0.000122399min
+CounteBViolated: 0
+CountPlanB (Newton, error bound violated or f'' > 0: sampling applied): 0
+CountNoPlanB: 27355
+CountCovTooLow: 2159
+CountScoreTooLow: 78

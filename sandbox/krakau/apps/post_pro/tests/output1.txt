@@ -1,0 +1,122 @@
+POST PROCESSING
+===============
+
+__OPTIONS____________________________________________________________________
+
+VERBOSITY	1
+readfileName	reads_mason2_msc5_realign_N6000.fastq
+readfileName	
+samFileName	reads_mason2_msc5_realign_N6000.CT_GA.sam
+refFileName     	hg18_chr21_3000.fa
+outputFileName     	reads_mason2_msc5_realign_N6000_simple.CT_GA.verified.sam
+
+Construct simple subst. matrix, CT
+Ref:C read:C/T: C o: A  subScore: 3.46204e-08 s: 0.164609  seqError:0.333333
+Ref:C read:C/T: C o: C  subScore: 0 s: 4.44444  seqError:0
+Ref:C read:C/T: C o: G  subScore: 3.46204e-08 s: 0.164609  seqError:0.333333
+Ref:C read:C/T: C o: T  subScore: 4.34679e-07 s: 2.06676  seqError:0.333333
+Ref:C read:C/T: C o: N  subScore: 0 s: 0  seqError:0
+Ref:C read:C/T: T o: A  subScore: 3.46204e-08 s: 0.164609  seqError:0.333333
+Ref:C read:C/T: T o: C  subScore: 9.34752e-07 s: 4.44444  seqError:0.333333
+Ref:C read:C/T: T o: G  subScore: 3.46204e-08 s: 0.164609  seqError:0.333333
+Ref:C read:C/T: T o: T  subScore: 0 s: 2.06676  seqError:0
+Ref:C read:C/T: T o: N  subScore: 0 s: 0  seqError:0
+Match scores: 
+Ref: A  read: A score: 4.44444  log10: 0.647817
+Ref: A  read: C score: 0.823046  log10: -0.084576
+Ref: A  read: G score: 0.16461  log10: -0.783544
+Ref: A  read: T score: 0.0914506  log10: -1.03881
+Ref: A  read: N score: 8.71281e-07  log10: -6.05984
+Ref: C  read: A score: 0.16461  log10: -0.783543
+Ref: C  read: C score: 4.44444  log10: 0.647817
+Ref: C  read: G score: 0.16461  log10: -0.783543
+Ref: C  read: T score: 2.06676  log10: 0.31529
+Ref: C  read: N score: 1.079e-06  log10: -5.96698
+Ref: G  read: A score: 0.16461  log10: -0.783544
+Ref: G  read: C score: 0.823046  log10: -0.084576
+Ref: G  read: G score: 4.44444  log10: 0.647817
+Ref: G  read: T score: 0.0914506  log10: -1.03881
+Ref: G  read: N score: 8.71281e-07  log10: -6.05984
+Ref: T  read: A score: 0.16461  log10: -0.783545
+Ref: T  read: C score: 0.823045  log10: -0.0845762
+Ref: T  read: G score: 0.16461  log10: -0.783545
+Ref: T  read: T score: 2.46913  log10: 0.392545
+Ref: T  read: N score: 5.71237e-07  log10: -6.24318
+Ref: N  read: A score: 0.222222  log10: -0.653212
+Ref: N  read: C score: 1.11111  log10: 0.0457573
+Ref: N  read: G score: 0.222222  log10: -0.653212
+Ref: N  read: T score: 0.123457  log10: -0.908484
+Ref: N  read: N score: 2.64846e-07  log10: -6.57701
+Read gaps: 
+Ref: A score: 0.0238209  log10: -1.62304
+Ref: C score: 0.0251377  log10: -1.59967
+Ref: G score: 0.0238209  log10: -1.62304
+Ref: T score: 0.0219187  log10: -1.65918
+Ref: N score: 0.0199763  log10: -1.69948
+Read gaps: 
+Ref: A score: 0.373035  log10: -0.42825
+Ref: C score: 0.374352  log10: -0.42672
+Ref: G score: 0.373035  log10: -0.42825
+Ref: T score: 0.371133  log10: -0.43047
+Ref: N score: 0.369191  log10: -0.432749
+Ref. gaps: 
+Read: A score: 0.0183158  log10: -1.73717
+Read: C score: 0.0183158  log10: -1.73717
+Read: G score: 0.0183158  log10: -1.73717
+Read: T score: 0.0183158  log10: -1.73717
+Read: N score: 0.0183158  log10: -1.73717
+Ref. gaps: 
+Read: A score: 0.36788  log10: -0.434294
+Read: C score: 0.36788  log10: -0.434294
+Read: G score: 0.36788  log10: -0.434294
+Read: T score: 0.36788  log10: -0.434294
+Read: N score: 0.36788  log10: -0.434294
+Ref:C read:C/T: C o: A  subScore: 1.73102e-08 s: 0.0823045  seqError:0.333333
+Ref:C read:C/T: C o: C  subScore: 0 s: 4.39506  seqError:0
+Ref:C read:C/T: C o: G  subScore: 1.55792e-07 s: 0.740741  seqError:0.333333
+Ref:C read:C/T: C o: T  subScore: 3.11584e-08 s: 0.148148  seqError:0.333333
+Ref:C read:C/T: C o: N  subScore: 0 s: 0  seqError:0
+Ref:C read:C/T: T o: A  subScore: 1.73102e-08 s: 0.0823045  seqError:0.333333
+Ref:C read:C/T: T o: C  subScore: 9.24365e-07 s: 4.39506  seqError:0.333333
+Ref:C read:C/T: T o: G  subScore: 1.55792e-07 s: 0.740741  seqError:0.333333
+Ref:C read:C/T: T o: T  subScore: 0 s: 0.148148  seqError:0
+Ref:C read:C/T: T o: N  subScore: 0 s: 0  seqError:0
+Match scores: 
+Ref: A  read: A score: 2.4417  log10: 0.387692
+Ref: A  read: C score: 0.148149  log10: -0.829302
+Ref: A  read: G score: 0.740741  log10: -0.130334
+Ref: A  read: T score: 0.148149  log10: -0.829302
+Ref: A  read: N score: 5.48734e-07  log10: -6.26064
+Ref: C  read: A score: 0.0823056  log10: -1.08457
+Ref: C  read: C score: 4.39506  log10: 0.642965
+Ref: C  read: G score: 0.740741  log10: -0.130333
+Ref: C  read: T score: 0.148149  log10: -0.829301
+Ref: C  read: N score: 8.4647e-07  log10: -6.07239
+Ref: G  read: A score: 2.03566  log10: 0.308706
+Ref: G  read: C score: 0.148149  log10: -0.8293
+Ref: G  read: G score: 4.39506  log10: 0.642965
+Ref: G  read: T score: 0.148149  log10: -0.8293
+Ref: G  read: N score: 1.06112e-06  log10: -5.97424
+Ref: T  read: A score: 0.0823056  log10: -1.08457
+Ref: T  read: C score: 0.148149  log10: -0.829301
+Ref: T  read: G score: 0.740741  log10: -0.130333
+Ref: T  read: T score: 4.39506  log10: 0.642965
+Ref: T  read: N score: 8.4647e-07  log10: -6.07239
+Ref: N  read: A score: 0.123457  log10: -0.908484
+Ref: N  read: C score: 0.222222  log10: -0.653212
+Ref: N  read: G score: 1.11111  log10: 0.0457573
+Ref: N  read: T score: 0.222222  log10: -0.653212
+Ref: N  read: N score: 2.64846e-07  log10: -6.57701
+Computation of alignment scores finished.
+Score before scaling: 43.7435 scale factor: -10  Score after scaling: -437.435 #gaps: 2  #mismatches: 3
+Score before scaling: 47.6325 scale factor: -10  Score after scaling: -476.325 #gaps: 2  #mismatches: 2
+Score before scaling: 44.1991 scale factor: -10  Score after scaling: -441.991 #gaps: 3  #mismatches: 1
+Score before scaling: 50.4855 scale factor: -10  Score after scaling: -504.855 #gaps: 4  #mismatches: 0
+Score before scaling: 48.14 scale factor: -10  Score after scaling: -481.4 #gaps: 1  #mismatches: 0
+Score before scaling: 49.2967 scale factor: -10  Score after scaling: -492.967 #gaps: 2  #mismatches: 1
+Score before scaling: 52.562 scale factor: -10  Score after scaling: -525.62 #gaps: 1  #mismatches: 0
+Score before scaling: 50.8828 scale factor: -10  Score after scaling: -508.828 #gaps: 0  #mismatches: 3
+ Only one hit
+  Time needed for all: 0.0480447min
+  Time needed for globalAlignment: 0.0397469min
+  Time needed for writeBsAlignment: 0.00321324min

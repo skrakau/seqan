@@ -1,0 +1,8 @@
+#./sandbox/krakau/apps/snp_meth_store/snp_meth_store ../../seqan-trunk/sandbox/krakau/apps/snp_meth_store/example/exampleGenome.fa ../../seqan-trunk/sandbox/krakau/apps/snp_meth_store/example/mappedReads1_2.sam -o ../../seqan-trunk/sandbox/krakau/apps/snp_meth_store/example/snp_meth.out -id ../../seqan-trunk/sandbox/krakau/apps/snp_meth_store/example/indels.out -if 1 -mp 40 -vv 
+#chr	pos	ref	A	C	G	T	cov	call	quality	snpQ
+X	75	C	12	CT	0	0	Genotype_score: 16.1324	methLevelF: 0	homoMethProbF: 0.577258	homoNonMethProbF: 0.422742
+X	89	C	12			methLevelF: 0	homoMethProbF: 1.72105e-49	homoNonMethProbF: 0.999345	heteroMethProbF: 0.000654671
+X	95	G	12			methLevelR: 0	homoMethProbR: 4.0539e-48	homoNonMethProbR: 0.793061	heteroMethProbR: 0.206939
+X	486	C	12	CT	0	0	Genotype_score: 55.2083	methLevelF: 0	homoMethProbF: 0.999998	homoNonMethProbF: 2.06313e-06
+X	488	C	12			methLevelF: 0	homoMethProbF: 1.6626e-27	homoNonMethProbF: 1	heteroMethProbF: 2.90823e-07
+X	534	A	12	AG	0	0	Genotype_score: 56.0614	methLevelR: 0	homoMethProbR: 0.00136501	homoNonMethProbR: 0.998635
