@@ -286,7 +286,7 @@ Render the member functions overview
 {% endif %}
 {% endfor %}
 
-{% if entry.kind == 'class' %}
+{% if entry.kind == 'class' or entry.kind == 'specialization' %}
 {% for co in entry.all_implemented %}
 {% if doc.top_level_entries[co].subentries['member_function'] %}
 <h3 data-toc="hidden">{{ qualifier }} Functions Inherited From {{ co|translink }}</h3>
@@ -352,7 +352,7 @@ Render the member typedefs overview
 {% endif %}
 {% endfor %}
 
-{% if entry.kind == 'class' %}
+{% if entry.kind == 'class' or entry.kind == 'specialization' %}
 {% for co in entry.all_implemented %}
 {% if doc.top_level_entries[co].subentries['member_typedef'] %}
 <h3 data-toc="hidden">{{ qualifier }} Typedefs Inherited From {{ co|translink }}</h3>
@@ -416,7 +416,7 @@ Render the interface functions overview
 {% endif %}
 {% endfor %}
 
-{% if entry.kind == 'class' %}
+{% if entry.kind == 'class' or entry.kind == 'specialization' %}
 {% for co in entry.all_implemented %}
 {% if doc.top_level_entries[co].subentries['interface_function'] %}
 <h3 data-toc="hidden">{{ qualifier }} Functions Inherited From {{ co|translink }}</h3>
@@ -541,7 +541,7 @@ Render the interface metafunctions overview
 {% endif %}
 {% endfor %}
 
-{% if entry.kind == 'class' %}
+{% if entry.kind == 'class' or entry.kind == 'specialization' %}
 {% for co in entry.all_implemented %}
 {% if doc.top_level_entries[co].subentries['interface_metafunction'] %}
 <h3 data-toc="hidden">{{ qualifier }} Metafunctions Inherited From {{ co|translink }}</h3>
@@ -597,7 +597,7 @@ Render the member variables overview
 {% endif %}
 {% endfor %}
 
-{% if entry.kind == 'class' %}
+{% if entry.kind == 'class' or entry.kind == 'specialization' %}
 {% for co in entry.all_implemented %}
 {% if doc.top_level_entries[co].subentries['member_variable'] %}
 <h3 data-toc="hidden">{{ qualifier }} Variable Inherited From {{ co|translink }}</h3>
@@ -757,8 +757,6 @@ Render the grouped macros details
     {% for h in subentry.headerfiles|sort -%}
     {{ h|e }}{% if not loop.last %}, {% endif %}
     {% endfor %}
-    {% else %}
-    &nbsp;
   </dd>
 </dl>
 {% endif %}
@@ -868,6 +866,22 @@ Render the interface functions details
   {% if subentry.deprecation_msgs %}
   <div class="note deprecated">Deprecated. <div class='inline'>
       {% for msg in subentry.deprecation_msgs %}
+      <p>{{ msg|transtext(False) }}</p>
+      {% endfor %}
+  </div></div>
+  {% endif %}
+
+  {% if subentry.warnings %}
+  <div class="note warnings">Warning. <div class='inline'>
+      {% for msg in subentry.warnings %}
+      <p>{{ msg|transtext(False) }}</p>
+      {% endfor %}
+  </div></div>
+  {% endif %}
+
+  {% if subentry.notes %}
+  <div class="note note">Note. <div class='inline'>
+      {% for msg in subentry.notes %}
       <p>{{ msg|transtext(False) }}</p>
       {% endfor %}
   </div></div>
@@ -1037,6 +1051,22 @@ Render the interface metafunctions details
   </div></div>
   {% endif %}
 
+  {% if subentry.warnings %}
+  <div class="note warnings">Warning. <div class='inline'>
+      {% for msg in subentry.warnings %}
+      <p>{{ msg|transtext(False) }}</p>
+      {% endfor %}
+  </div></div>
+  {% endif %}
+
+  {% if subentry.notes %}
+  <div class="note note">Note. <div class='inline'>
+      {% for msg in subentry.notes %}
+      <p>{{ msg|transtext(False) }}</p>
+      {% endfor %}
+  </div></div>
+  {% endif %}
+
   <div class="docstring">
     <div class="discussion">
       {{ subentry.brief|transtext }}
@@ -1055,12 +1085,6 @@ Render the interface metafunctions details
 	</table>
   {% endif %}
 
-  <div class="docstring">
-    <div class="discussion">
-      {{ body(subentry, start_heading=4) }}
-    </div>
-  </div>
-
   {% if subentry.returns %}
   <h4>Returns</h4>
 	<table class="overview">
@@ -1072,6 +1096,12 @@ Render the interface metafunctions details
 	{% endfor %}
 	</table>
   {% endif %}
+
+  <div class="docstring">
+    <div class="discussion">
+      {{ body(subentry, start_heading=4) }}
+    </div>
+  </div>
 </div>
 
 {% endfor %}

@@ -222,23 +222,18 @@ struct RankDictionaryEntry_<TValue, TwoLevels<TSpec> >
 // ----------------------------------------------------------------------------
 /*!
  * @class TwoLevelRankDictionary
- *
  * @extends RankDictionary
- * 
  * @headerfile seqan/index.h
  * 
- * @brief A TwoLevelRankDictionary is a @link RankDictionary @endlink
- * consisting of two levels.
+ * @brief A TwoLevelRankDictionary is a @link RankDictionary @endlink consisting of two levels.
  * 
  * @signature template <typename TValue, typename TSpec>
  *            class RankDictionary<TValue, WaveletTree<TSpec> >;
  * 
  * @tparam TValue The alphabet type of the wavelet tree.
- * @tparam TSpec A tag for specialization purposes. Default: <tt>void</tt>
+ * @tparam TSpec  A tag for specialization purposes. Default: <tt>void</tt>
  * 
- * @section Remarks
- * 
- * This @link RankDictionary @endlink consists of tow levels of rank
+ * This @link RankDictionary @endlink consists of two levels of rank
  * infromation, in which one stores information of blocks and the other
  * information until a specified block. Combining those two informations
  * leads to constant rank dictionary look ups.
@@ -721,7 +716,6 @@ _getValuesRanks(RankDictionary<bool, TwoLevels<TSpec> > const & dict, TPos pos)
 // ----------------------------------------------------------------------------
 // Function getRank()
 // ----------------------------------------------------------------------------
-
 template <typename TValue, typename TSpec, typename TPos, typename TChar>
 SEQAN_HOST_DEVICE inline typename Size<RankDictionary<TValue, TwoLevels<TSpec> > const>::Type
 getRank(RankDictionary<TValue, TwoLevels<TSpec> > const & dict, TPos pos, TChar c)
@@ -760,7 +754,6 @@ getRank(RankDictionary<bool, TwoLevels<TSpec> > const & dict, TPos pos)
 // ----------------------------------------------------------------------------
 // Function getValue()
 // ----------------------------------------------------------------------------
-
 template <typename TValue, typename TSpec, typename TPos>
 SEQAN_HOST_DEVICE inline typename Value<RankDictionary<TValue, TwoLevels<TSpec> > >::Type
 getValue(RankDictionary<TValue, TwoLevels<TSpec> > & dict, TPos pos)
