@@ -567,7 +567,7 @@ int benchmarkReadResult(RabemaStats & result,
         int bestDistance = minValue<int>();  // Marker for "not set yet".
         // Note that bestDistance expresses the distance in percent error, relative to the read length, ceiled up
         // and converted to an int value.
-        if (!options.oracleMode)
+        if (true)//!options.oracleMode) // TODO myMod
         {
             // Get best distance from NM tag if set and we are to trust it.
             if (options.trustNM)
@@ -579,7 +579,11 @@ int benchmarkReadResult(RabemaStats & result,
                 {
                     if (extractTagValue(bestDistance, bamTags, idx))
                     {
-                        // Convert from count to rate.
+                        // Convert from count to rate. // TODO myMod
+                        if (hasFlagFirst(samRecord) || (!hasFlagFirst(samRecord) && !hasFlagLast(samRecord)))
+                            readSeq = readSeqL;
+                        if (hasFlagLast(samRecord))
+                            readSeq = readSeqR;
                         bestDistance = static_cast<int>(ceil(100.0 * bestDistance / length(readSeq)));
                     }
                     else
@@ -620,19 +624,38 @@ int benchmarkReadResult(RabemaStats & result,
 
         // Get sequence id and last position of alignment.  We try to hit the interval with the last position (not
         // C-style end) of the read.
-        unsigned lastPos = 0;
-        if (!hasFlagRC(samRecord))
-            lastPos = samRecord.beginPos + getAlignmentLengthInRef(samRecord) - countPaddings(samRecord.cigar) - 1;
-        else
-            lastPos = length(refSeqs[seqId]) - samRecord.beginPos - 1;
-
-        if (options.showTryHitIntervals)
-            std::cerr << "TRY HIT\tchr=" << refSeqNames[seqId] << "\tlastPos=" << lastPos << "\tqName="
-                      << samRecord.qName << "\n";
-
         // Try to hit any interval.
         String<unsigned> queryResult;
-        findIntervals(intervalTrees[seqId], lastPos, queryResult);
+        if (false)
+        {
+            unsigned lastPos = 0;
+            if (!hasFlagRC(samRecord))
+                lastPos = samRecord.beginPos + getAlignmentLengthInRef(samRecord) - countPaddings(samRecord.cigar) - 1;
+            else
+                lastPos = length(refSeqs[seqId]) - samRecord.beginPos - 1;
+
+            if (options.showTryHitIntervals)
+                std::cerr << "TRY HIT\tchr=" << refSeqNames[seqId] << "\tlastPos=" << lastPos << "\tqName="
+                          << samRecord.qName << "\n";
+
+            findIntervals(intervalTrees[seqId], lastPos, queryResult);
+        }
+        else        // myMod: look on both strands, since mason reads with methylation do not necessarily have the same strand as the same run without meths // TODO change, different now
+        {
+            unsigned lastPos = 0;
+            lastPos = samRecord.beginPos + getAlignmentLengthInRef(samRecord) - countPaddings(samRecord.cigar) - 1;
+            findIntervals(intervalTrees[seqId], lastPos, queryResult);
+
+            String<unsigned> queryResult2;
+            lastPos = length(refSeqs[seqId]) - samRecord.beginPos - 1;
+            findIntervals(intervalTrees[seqId], lastPos, queryResult2);
+            append(queryResult, queryResult2);
+
+            if (options.showTryHitIntervals)
+                std::cerr << "TRY HIT\tchr=" << refSeqNames[seqId] << "\tlastPos=" << lastPos << "\tqName="
+                          << samRecord.qName << "\n";
+        }
+
         mappedAny = mappedAny || !empty(queryResult);
 #if DEBUG_RABEMA
         if (mappedAny)
@@ -657,7 +680,7 @@ int benchmarkReadResult(RabemaStats & result,
             if ((options.benchmarkCategory == CATEGORY_ALL_BEST || options.benchmarkCategory == CATEGORY_ANY_BEST) &&
                 (smallestDistance != maxValue<int>()))
                 allowedDistance = smallestDistance;
-            if (bestDistance > allowedDistance)
+            if (bestDistance > allowedDistance)     // TODO myMod: distance in mappers sam () > maxError
             {
                 if (options.showSuperflousIntervals)
                 {
@@ -686,7 +709,8 @@ int benchmarkReadResult(RabemaStats & result,
                 std::cerr << "ERROR: Found an additional hit for read " << samRecord.qName << "!\n";
                 return 1;
             }
-            std::cerr << "WARNING: Found an additional hit for read " << samRecord.qName << ".\n";
+            //std::cerr << "WARNING: Found an additional hit for read " << samRecord.qName << ".\n";
+            result.additionalHits += 1; // TODO myMod
         }
     }
 
@@ -1057,7 +1081,7 @@ parseCommandLine(RabemaEvaluationOptions & options, int argc, char const ** argv
     setValidValues(parser, "in-bam", "bam");
     addOption(parser, seqan::ArgParseOption("", "out-tsv", "Path to write the statistics to as TSV.",
                                             seqan::ArgParseArgument::OUTPUTFILE, "TSV"));
-    setValidValues(parser, "out-tsv", "rabema_report_tsv");
+    setValidValues(parser, "out-tsv", "rabema_report_tsv tsv");
 
     addOption(parser, seqan::ArgParseOption("", "dont-check-sorting",
                                             "Do not check sortedness (by name) of input SAM/BAM files.  This is "

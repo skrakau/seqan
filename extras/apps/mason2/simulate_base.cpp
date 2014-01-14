@@ -68,7 +68,8 @@ void SequencingSimulator::simulatePairedEnd(TRead & seqL, TQualities & qualsL, S
         // Re-pick strandedness of the BS-treated fragment.
         if (seqOptions->bsSeqOptions.bsProtocol != BSSeqOptions::DIRECTIONAL)
             bsForward = (pickRandomNumber(methRng, seqan::Pdf<seqan::Uniform<int> >(0, 1)) == 1);
-        _simulateBSTreatment(methFrag, frag, *levels, !bsForward);
+        _simulateBSTreatment(methFrag, infoL, frag, *levels, !bsForward);
+        infoR.bsEditString = infoL.bsEditString;
         _simulatePairedEnd(seqL, qualsL, infoL, seqR, qualsR, infoR,
                            infix(methFrag, 0, length(methFrag)), isForward);
     }
@@ -84,6 +85,9 @@ void SequencingSimulator::simulateSingleEnd(TRead & seq, TQualities & quals, Seq
                                             MethylationLevels const * levels)
 {
     bool isForward = (pickRandomNumber(rng, seqan::Pdf<seqan::Uniform<int> >(0, 1)) == 1);
+    // std::cout << "isForward:" << isForward << std::endl;
+
+    if (info.debugRead) std::cout << "before bs treatment (1)..." << std::endl;
     if (!seqOptions->bsSeqOptions.bsSimEnabled)
     {
         _simulateSingleEnd(seq, quals, info, frag, isForward);
@@ -95,8 +99,18 @@ void SequencingSimulator::simulateSingleEnd(TRead & seq, TQualities & quals, Seq
         // Re-pick strandedness of the BS-treated fragment.
         if (seqOptions->bsSeqOptions.bsProtocol != BSSeqOptions::DIRECTIONAL)
             bsForward = (pickRandomNumber(methRng, seqan::Pdf<seqan::Uniform<int> >(0, 1)) == 1);
-        _simulateBSTreatment(methFrag, frag, *levels, !bsForward);
-        _simulateSingleEnd(seq, quals, info, infix(methFrag, 0, length(methFrag)), isForward);
+        if (info.debugRead) std::cout << "before bs treatment (2)..." << std::endl;
+        _simulateBSTreatment(methFrag, info, frag, *levels, !bsForward);
+        if (!seqOptions->bsSeqOptions.buildGoldSam)
+        {
+            //std::cout << "frag:" << infix(methFrag, 0, length(methFrag)) << std::endl;
+            _simulateSingleEnd(seq, quals, info, infix(methFrag, 0, length(methFrag)), isForward);
+        }        
+        else
+        {
+            //std::cout << "frag:" << frag << std::endl;
+            _simulateSingleEnd(seq, quals, info, frag, isForward);
+        }    
     }
 }
 
@@ -106,11 +120,15 @@ void SequencingSimulator::simulateSingleEnd(TRead & seq, TQualities & quals, Seq
 
 // Simulate single-end sequencing from a fragment.
 void SequencingSimulator::_simulateBSTreatment(seqan::Dna5String & methFragment,
+                                               SequencingSimulationInfo & info,
                                                TFragment const & frag,
                                                MethylationLevels const & levels,
                                                bool reverse)
 {
     methFragment = frag;
+    seqan::clear(info.bsEditString);
+    resize(info.bsEditString, length(frag), false);
+
     for (unsigned pos = 0; pos != length(frag); ++pos)
     {
         double level = reverse ? levels.levelR(pos + beginPosition(frag)) : levels.levelF(pos + beginPosition(frag));
@@ -124,13 +142,24 @@ void SequencingSimulator::_simulateBSTreatment(seqan::Dna5String & methFragment,
 
         // Decide whether methFragment[pos] is methylated.  If this is the case then we leave it untouched.
         seqan::Pdf<seqan::Uniform<double> > pdf(0, 1);
-        if (pickRandomNumber(methRng, pdf) < level)
+        //std::cout <<  "level: " << level << "rng: " << pickRandomNumber(rng, pdf) <<  std::endl;
+        if (pickRandomNumber(rng, pdf) < level)
             continue;
 
         // Otherwise, pick whether we will convert.
         if (pickRandomNumber(methRng, pdf) < seqOptions->bsSeqOptions.bsConversionRate)
-            methFragment[pos] = reverse ? 'A' : 'T';
+        {
+            if (!seqOptions->bsSeqOptions.buildGoldSam) methFragment[pos] = reverse ? 'A' : 'T';
+            else info.bsEditString[pos] = true; 
+        }
     }
+    if (info.debugRead)
+    {
+        std::cout << "Reverse: " << (reverse ? "true":"false") << " (here original displayed)" << std::endl;
+        std::cout << "frag: " << frag << std::endl;
+        std::cout << "bsEditString: " << info.bsEditString << std::endl;
+    }
+
 }
 
 // ---------------------------------------------------------------------------
@@ -208,6 +237,6 @@ void SequencingSimulator::_simulateSingleEnd(TRead & seq, TQualities & quals, Se
                                              TFragment const & frag,
                                              bool isForward)
 {
-    Strand strand = isForward ? FORWARD : REVERSE;
-    this->simulateRead(seq, quals, info, frag, LEFT, strand);
+    if (isForward) this->simulateRead(seq, quals, info, frag, LEFT, FORWARD);
+    else this->simulateRead(seq, quals, info, frag, RIGHT, REVERSE);
 }

@@ -284,6 +284,8 @@ void BSSeqOptions::addOptions(seqan::ArgumentParser & parser) const
 
     addOption(parser, seqan::ArgParseOption("", "bs-seq-conversion-rate", "Conversion rate for unmethylated Cs to "
                                             "become Ts.", seqan::ArgParseOption::DOUBLE, "RATE"));
+    addOption(parser, seqan::ArgParseOption("", "build-gold-sam", "Build pseudo gold sam output, with non-bs read sequences."));
+
     setMinValue(parser, "bs-seq-conversion-rate", "0");
     setMaxValue(parser, "bs-seq-conversion-rate", "1");
     setDefaultValue(parser, "bs-seq-conversion-rate", "0.99");
@@ -309,6 +311,7 @@ void BSSeqOptions::getOptionValues(seqan::ArgumentParser const & parser)
     seqan::CharString tmp;
     getOptionValue(tmp, parser, "bs-seq-protocol");
     bsProtocol = (tmp == "undirectional") ? UNDIRECTIONAL : DIRECTIONAL;
+    getOptionValue(buildGoldSam, parser, "build-gold-sam");
 }
 
 // ----------------------------------------------------------------------------
@@ -322,7 +325,8 @@ void BSSeqOptions::print(std::ostream & out) const
         << "\n"
         << "  ENABLED\t" << getYesNoStr(bsSimEnabled) << "\n"
         << "  PROTOCOL\t" << getBSSeqProtocolStr(bsProtocol) << "\n"
-        << "  CONVERSION RATE\t" << bsConversionRate << "\n";
+        << "  CONVERSION RATE\t" << bsConversionRate << "\n"
+        << "  BUILD GOLD SAM\t" << getYesNoStr(buildGoldSam) << "\n";
 }
 
 // ----------------------------------------------------------------------------
@@ -706,6 +710,12 @@ void IlluminaSequencingOptions::addOptions(seqan::ArgumentParser & parser) const
                                             "FASTQ file to use for a template for right-end reads.",
                                             seqan::ArgParseOption::INPUTFILE, "IN.fq"));
     setValidValues(parser, "illumina-right-template-fastq", "fq fastq");
+
+    addOption(parser, seqan::ArgParseOption("", "uni-seq-errors", "Whether or not to simulate uniform sequencing errors."));
+    addOption(parser, seqan::ArgParseOption("", "ns-subst-errors", "Whether or not to simulate non uniform substitution errors to base type."));
+    addOption(parser, seqan::ArgParseOption("", "ns-subst-errors-from", "Whether or not to simulate non uniform substitution errors from base type."));
+    addOption(parser, seqan::ArgParseOption("", "ns-ins-errors", "Whether or not to simulate non uniform insertion errors."));
+    addOption(parser, seqan::ArgParseOption("", "ns-del-errors", "Whether or not to simulate non uniform deletion errors."));
 }
 
 // ----------------------------------------------------------------------------
@@ -747,6 +757,12 @@ void IlluminaSequencingOptions::getOptionValues(seqan::ArgumentParser const & pa
 
     getOptionValue(leftTemplateFastq, parser, "illumina-left-template-fastq");
     getOptionValue(rightTemplateFastq, parser, "illumina-right-template-fastq");
+
+    getOptionValue(uniformSequencingErrors, parser, "uni-seq-errors");
+    getOptionValue(nonSimpleSubstErrors, parser, "ns-subst-errors");
+    getOptionValue(nonSimpleSubstErrorsFrom, parser, "ns-subst-errors-from");
+    getOptionValue(nonSimpleInsErrors, parser, "ns-ins-errors");
+    getOptionValue(nonSimpleDelErrors, parser, "ns-del-errors");
 }
 // ----------------------------------------------------------------------------
 // Function IlluminaSequencingOptions::print()
@@ -778,7 +794,13 @@ void IlluminaSequencingOptions::print(std::ostream & out) const
         << "  STDDEV MISMATCH QUALITY END  \t" << stdDevMismatchQualityEnd << "\n"
         << "\n"
         << "  LEFT TEMPLATE FASTQ          \t" << leftTemplateFastq << "\n"
-        << "  RIGHT TEMPLATE FASTQ         \t" << rightTemplateFastq << "\n";
+        << "  RIGHT TEMPLATE FASTQ         \t" << rightTemplateFastq << "\n"
+        << "\n"
+        << "  UNFORM SEQUENCING ERRORS     \t" << uniformSequencingErrors << "\n"
+        << "  NON UNIFORM SUBST ERRORS     \t" << nonSimpleSubstErrors << "\n"
+        << "  NON UNIFORM SUBST ERRORS FROM\t" << nonSimpleSubstErrorsFrom << "\n"
+        << "  NON UNIFORM INS ERRORS       \t" << nonSimpleInsErrors << "\n"
+        << "  NON UNIFORM DEL ERRORS       \t" << nonSimpleDelErrors << "\n";
 }
 
 // ----------------------------------------------------------------------------
@@ -1508,7 +1530,7 @@ void MasonFragmentSequencingOptions::addOptions(seqan::ArgumentParser & parser) 
     setDefaultValue(parser, "seed", "0");
 
     addOption(parser, seqan::ArgParseOption("i", "in", "Path to input file.",
-                                            seqan::ArgParseOption::INPUTFILE, "OUT"));
+                                            seqan::ArgParseOption::INPUTFILE, "IN"));
     setRequired(parser, "in");
     setValidValues(parser, "in", "fa fasta");
 
@@ -1628,8 +1650,8 @@ void MasonMethylationOptions::addOptions(seqan::ArgumentParser & parser) const
     setRequired(parser, "in");
     setValidValues(parser, "in", "fa fasta");
 
-    addOption(parser, seqan::ArgParseOption("o", "out", "Input FASTA file with genome.",
-                                            seqan::ArgParseOption::INPUTFILE, "OUT.fa"));
+    addOption(parser, seqan::ArgParseOption("o", "out", "Output FASTA file with methylation levels.",
+                                            seqan::ArgParseOption::OUTPUTFILE, "OUT.fa"));
     setRequired(parser, "out");
     setValidValues(parser, "out", "fa fasta");
 

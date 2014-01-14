@@ -91,7 +91,15 @@ struct SequencingSimulationInfo
     // The begin position of the sequence.
     int beginPos;
 
-    SequencingSimulationInfo() : isForward(false), rID(-1), hID(-1), beginPos(-1)
+    unsigned count;
+    unsigned countI;
+    unsigned countD;
+
+    bool debugRead;
+
+    seqan::String<bool> bsEditString;   // For building gold sam (using error freqs for bs reads bases)
+
+    SequencingSimulationInfo() : isForward(false), rID(-1), hID(-1), beginPos(-1), count(0), countI(0), countD(0), debugRead(false)
     {}
 
     template <typename TStream>
@@ -189,6 +197,7 @@ private:
     //
     // The result is a DNA string with the translations.
     void _simulateBSTreatment(seqan::Dna5String & methFragment,
+                              SequencingSimulationInfo & info,
                               TFragment const & frag,
                               MethylationLevels const & levels,
                               bool reverse);

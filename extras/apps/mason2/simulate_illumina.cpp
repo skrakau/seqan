@@ -33,6 +33,7 @@
 // ==========================================================================
 
 #include "sequencing.h"
+#include "simulate_illumina_error_frequencies.h"
 
 // ===========================================================================
 // Class IlluminaSequencingOptions
@@ -54,8 +55,23 @@ public:
     // Standard deviations for the normal distributions of base qualities for the non-mismatch case.
     seqan::String<double> qualityStdDevs;
 
+    double const * baseErrorFreqsFrom;
+    double scalingFactorFrom;
+    double const * seqErrorFreqs;
+
+    double const * insErrorFreqsM;
+    double const * delErrorFreqsM;
+    double scalingFactorDel;
+
     IlluminaModel()
-    {}
+    {
+        (*this).baseErrorFreqsFrom = seqan::BaseErrorFreqsFrom<double, seqan::BsSimple>::getData();
+        (*this).seqErrorFreqs = seqan::SeqErrorFreqs<double, seqan::BsSimple>::getData();
+        (*this).insErrorFreqsM = seqan::InsErrorFreqsM<double, seqan::BsSimple>::getData();
+        (*this).delErrorFreqsM = seqan::DelErrorFreqsM<double, seqan::BsSimple>::getData();
+        scalingFactorFrom = 5.0;
+        scalingFactorDel = 5.0;
+    }
 };
 
 // ===========================================================================
@@ -82,6 +98,24 @@ IlluminaSequencingSimulator::IlluminaSequencingSimulator(TRng & rng,
 
 void IlluminaSequencingSimulator::_initModel()
 {
+    if (illuminaOptions.nonSimpleSubstErrorsFrom) 
+    {
+        model->baseErrorFreqsFrom = seqan::BaseErrorFreqsFrom<double, seqan::BsNonSimple>::getData();
+        model->scalingFactorFrom = 3.5;
+    }
+    if (illuminaOptions.nonSimpleSubstErrors) model->seqErrorFreqs = seqan::SeqErrorFreqs<double, seqan::BsNonSimple>::getData();
+    if (illuminaOptions.nonSimpleInsErrors) model->insErrorFreqsM = seqan::InsErrorFreqsM<double, seqan::BsNonSimple>::getData();
+    if (illuminaOptions.nonSimpleDelErrors)
+    {
+        model->delErrorFreqsM = seqan::DelErrorFreqsM<double, seqan::BsNonSimple>::getData();
+        model->scalingFactorDel = 3.5;
+    }
+
+    std::cout << "illuminaOptions.nonSimpleSubstErrorsFrom: " << (illuminaOptions.nonSimpleSubstErrorsFrom ? "true":"false") << std::endl;
+    std::cout << "illuminaOptions.nonSimpleSubstErrors: " << (illuminaOptions.nonSimpleSubstErrors ? "true":"false") << std::endl;
+    std::cout << "illuminaOptions.nonSimpleInsErrors: " << (illuminaOptions.nonSimpleInsErrors ? "true":"false") << std::endl;
+    std::cout << "illuminaOptions.nonSimpleDelErrors: " << (illuminaOptions.nonSimpleDelErrors ? "true":"false") << std::endl;
+
     // Compute mismatch probabilities, piecewise linear function.
     resize(model->mismatchProbabilities, illuminaOptions.readLength);
     // Compute probability at raise point.
@@ -229,6 +263,174 @@ void _simulateSequence(TRead & read, TRng & rng, TFrag const & frag,
     }
 }
 
+template<typename TFrag, typename TModel>
+void _simulateSequence(TRead & read, TRng & rng, TFrag const & frag,
+                       TCigarString const & cigar, TModel const & model, SequencingSimulationInfo & info)
+{
+    clear(read);
+
+    if (info.debugRead)
+    {
+        std::cout << "cigar: ";
+        for (unsigned i = 0; i < length(cigar); ++i)
+        {
+            if (cigar[i].operation == 'D') std::cout << 'D' << cigar[i].count;
+            else if (cigar[i].operation == 'I')  std::cout << 'I' << cigar[i].count;
+            else if (cigar[i].operation == 'M')  std::cout << 'M' << cigar[i].count;
+            else if (cigar[i].operation == 'X')  std::cout << 'X' << cigar[i].count;
+        }
+        std::cout << std::endl;
+    }
+
+    typedef typename seqan::Iterator<TFrag>::Type TFragIter;
+    TFragIter it = begin(frag, seqan::Standard());
+
+    for (unsigned i = 0; i < length(cigar); ++i)
+    {
+        //unsigned numSimulate = 0;
+        if (cigar[i].operation == 'M')
+        {
+            for (unsigned j = 0; j < cigar[i].count; ++j, ++it)
+                appendValue(read, *it);
+            continue;
+        }
+        else if (cigar[i].operation == 'D')
+        {
+            it += cigar[i].count;
+            info.countD += cigar[i].count;
+            continue;
+        }
+
+        // Otherwise, we have insertions or mismatches.
+        if (cigar[i].operation == 'I')
+        {
+            for (unsigned j = 0; j < cigar[i].count; ++j)
+            {
+                double pA = model->insErrorFreqsM[0];
+                double pC = model->insErrorFreqsM[1];
+                double pG = model->insErrorFreqsM[2];
+                double pT = model->insErrorFreqsM[3];
+
+                int num;
+                double x = pickRandomNumber(rng, seqan::Pdf<seqan::Uniform<double> >(0, 1));
+
+                if (x < pA) num = 0;
+                else if (x < pA + pC) num = 1;
+                else if (x < pA + pC + pG) num = 2;
+                else if (x < pA + pC + pG + pT) num = 3;
+                else  num = 4;
+
+                appendValue(read, seqan::Dna5(num));
+                ++info.countI;
+            }
+            continue;
+        }
+
+        if (cigar[i].operation == 'X')
+        {
+            for (unsigned j = 0; j < cigar[i].count; ++j)
+            {
+                // in case of gold: doesn't matter, which base, only cigar counts
+                double pA = model->seqErrorFreqs[ordValue(*it)*5 + 0];
+                double pC = model->seqErrorFreqs[ordValue(*it)*5 + 1];
+                double pG = model->seqErrorFreqs[ordValue(*it)*5 + 2];
+                double pT = model->seqErrorFreqs[ordValue(*it)*5 + 3];
+
+                int num;
+                double x = pickRandomNumber(rng, seqan::Pdf<seqan::Uniform<double> >(0, 1));
+
+                if (x < pA) num = 0;
+                else if (x < pA + pC) num = 1;
+                else if (x < pA + pC + pG) num = 2;
+                else if (x < pA + pC + pG + pT) num = 3;
+                else num = 4;
+                
+                //std::cout << (*it) << " pA: " << pA << " pC:" << pC << " pG: " << pG << " pT: " << (1-pA - pC - pG) << std::endl;
+                appendValue(read, seqan::Dna5(num));
+                ++info.count;
+            }
+            it += cigar[i].count;
+        }
+    }
+    //std::cout << "read: " << read << std::endl;
+
+}
+
+template<typename TFrag, typename TModel>
+void _simulateCigar2(TFrag const & frag, TRng & rng, TCigarString & cigar, 
+                    unsigned len, seqan::String<bool> bsEditString, TModel const & model, IlluminaSequencingOptions const & illuminaOptions,  SequencingSimulationInfo & info)  // TODO rm info
+{
+    clear(cigar);
+    if (info.debugRead)
+    {
+        std::cout << "frag: " << frag << std::endl;
+        std::cout << "bsEdit: " << bsEditString << std::endl;
+    }
+    typedef typename seqan::Iterator<TFrag>::Type TFragIter;
+    typedef typename seqan::Iterator<seqan::String<bool> >::Type TGoldIter;
+    TFragIter it = begin(frag, seqan::Standard());
+    TGoldIter itG = begin(bsEditString, seqan::Standard());    // For build gold sam, true if bs conversion in final bs read
+    
+    for (int i = 0; i < (int)len;)
+    {
+        double x = pickRandomNumber(rng, seqan::Pdf<seqan::Uniform<double> >(0, 1));
+        double pInsert = illuminaOptions.probabilityInsert;
+        // Use theoretical bs base for error freqs 
+        double pMismatch;
+        if (*itG)  // take care that error is different than original? shouldn't matter  
+        {
+            if ((*it) == 'C') pMismatch = illuminaOptions.probabilityMismatch * model->baseErrorFreqsFrom[3] * model->scalingFactorFrom;     // Use del rate for T
+            else if ((*it) == 'G') pMismatch = illuminaOptions.probabilityMismatch * model->baseErrorFreqsFrom[0] * model->scalingFactorFrom;     
+            else pMismatch = illuminaOptions.probabilityMismatch * model->baseErrorFreqsFrom[ordValue(*it)] * model->scalingFactorFrom;
+        } 
+        else pMismatch = illuminaOptions.probabilityMismatch * model->baseErrorFreqsFrom[ordValue(*it)] * model->scalingFactorFrom; 
+        double pDelete;
+        if (*itG)   
+        {
+            if ((*it) == 'C') pDelete = illuminaOptions.probabilityDelete * model->delErrorFreqsM[3] * model->scalingFactorDel;     // Use del rate for T
+            else if ((*it) == 'G') pDelete = illuminaOptions.probabilityDelete * model->delErrorFreqsM[0] *  model->scalingFactorDel;      
+            else pDelete = illuminaOptions.probabilityDelete * model->delErrorFreqsM[ordValue(*it)] *  model->scalingFactorDel;
+        }   
+        else  pDelete = illuminaOptions.probabilityDelete * model->delErrorFreqsM[ordValue(*it)] *  model->scalingFactorDel;     
+
+        double pMatch = 1.0 - pMismatch - pInsert - pDelete;
+
+        if (info.debugRead)
+        {
+            std::cout << "x: " << x << std::endl;
+            std::cout << "pMismatch: " << pMismatch << std::endl;
+            std::cout << "pInsert: " << pInsert << std::endl;
+            std::cout << "pDelete: " << pDelete << std::endl;
+            std::cout << "pMatch: " << pMatch << std::endl;
+        }
+
+
+        if (x < pMatch)  // match
+        {
+            i += appendOperation(cigar, 'M').first;
+            ++it;
+            ++itG;
+        }
+        else if (x < pMatch + pMismatch)  // point polymorphism
+        {
+            i += appendOperation(cigar, 'X').first;
+            ++it;
+            ++itG;
+        }
+        else if (x < pMatch + pMismatch + pInsert) // insertion
+        {
+            i += appendOperation(cigar, 'I').first;
+        }
+        else  // deletion
+        {
+            i += appendOperation(cigar, 'D').first;
+            ++it;
+            ++itG;
+        }
+    }
+    //std::cout << std::endl;
+}
+
 }  // namespace (anonymous)
 
 // ---------------------------------------------------------------------------
@@ -242,7 +444,25 @@ void IlluminaSequencingSimulator::simulateRead(TRead & seq, TQualities & quals, 
     // std::cerr << "simulateRead(" << (char const *)(dir == LEFT ? "L" : "R") << ", " << (char const *)(strand == FORWARD ? "-->" : "<--") << ")\n";
     // Simulate sequencing operations.
     TCigarString cigar;
-    _simulateCigar(cigar);
+    typedef seqan::ModifiedString<seqan::ModifiedString<TFragment, seqan::ModView<seqan::FunctorComplement<seqan::Dna5> > >, seqan::ModReverse> TRevCompFrag;
+    typedef seqan::ModifiedString<seqan::String<bool>, seqan::ModReverse>                                                                       TRevBoolString;
+
+    if (illuminaOptions.uniformSequencingErrors) _simulateCigar(cigar);
+    else 
+    {   // Currently only works for R1 --> <-- R2, since we don't know read length in advance
+        if ((dir == LEFT) && (strand == FORWARD))
+            _simulateCigar2(frag, rng, cigar, this->readLength(), info.bsEditString, model, illuminaOptions, info);
+        else //if ((dir == RIGHT) && (strand == REVERSE))
+            _simulateCigar2(TRevCompFrag(frag), rng, cigar, this->readLength(), TRevBoolString(info.bsEditString), model, illuminaOptions, info);
+        /*else
+        {
+            std::cerr << "Dir: " << ((dir == LEFT) ? "LEFT":"RIGHT") << std::endl;
+            std::cerr << "strand: " << ((strand == FORWARD) ? "FORWARD":"REVERSE") << std::endl;
+
+            throw std::runtime_error("This should not happend!");
+        }*/
+
+    }
     unsigned lenInRef = 0;
     _getLengthInRef(cigar, lenInRef);
 
@@ -252,15 +472,24 @@ void IlluminaSequencingSimulator::simulateRead(TRead & seq, TQualities & quals, 
     }
 
     // Simulate sequence (materialize mismatches and insertions).
-    typedef seqan::ModifiedString<seqan::ModifiedString<TFragment, seqan::ModView<seqan::FunctorComplement<seqan::Dna5> > >, seqan::ModReverse> TRevCompFrag;
-    if ((dir == LEFT) && (strand == FORWARD))
-        _simulateSequence(seq, rng, prefix(frag, lenInRef), cigar);
-    else if ((dir == LEFT) && (strand == REVERSE))
-        _simulateSequence(seq, rng, TRevCompFrag(prefix(frag, lenInRef)), cigar);
-    else if ((dir == RIGHT) && (strand == FORWARD))
-        _simulateSequence(seq, rng, suffix(frag, length(frag) - lenInRef), cigar);
-    else  // ((dir == RIGHT) && (strand == REVERSE))
-        _simulateSequence(seq, rng, TRevCompFrag(suffix(frag, length(frag) - lenInRef)), cigar);
+    if (illuminaOptions.uniformSequencingErrors) 
+    {
+        if ((dir == LEFT) && (strand == FORWARD))
+            _simulateSequence(seq, rng, prefix(frag, lenInRef), cigar);
+        else if ((dir == LEFT) && (strand == REVERSE))
+            _simulateSequence(seq, rng, TRevCompFrag(prefix(frag, lenInRef)), cigar);
+        else if ((dir == RIGHT) && (strand == FORWARD))
+            _simulateSequence(seq, rng, suffix(frag, length(frag) - lenInRef), cigar);
+        else  // ((dir == RIGHT) && (strand == REVERSE))
+            _simulateSequence(seq, rng, TRevCompFrag(suffix(frag, length(frag) - lenInRef)), cigar);
+    }
+    else
+    {
+        if ((dir == LEFT) && (strand == FORWARD))
+            _simulateSequence(seq, rng, prefix(frag, lenInRef), cigar, model, info);
+        else  
+            _simulateSequence(seq, rng, TRevCompFrag(suffix(frag, length(frag) - lenInRef)), cigar, model, info);
+    }
 
     // Simulate qualities.
     _simulateQualities(quals, cigar);
@@ -288,7 +517,7 @@ void IlluminaSequencingSimulator::simulateRead(TRead & seq, TQualities & quals, 
         if (strand == REVERSE)
             reverseComplement(info.sampleSequence);
     }
-    // std::cerr << "  frag  =" << frag << "\n";
+    // std::cerr << "  sampleSequence  =" << info.sampleSequence << " beginPos: " << info.beginPos << std::endl;
     // std::cerr << "  fragRC=" << TRevCompFrag(frag) << "\n";
     // std::cerr << "  seq=" << seq << "\tquals=" << quals << "\n";
 }

@@ -577,7 +577,11 @@ public:
     bool buildAlignments;  // Whether or not compute the BAM alignment records.
     std::vector<seqan::BamAlignmentRecord> alignmentRecords;
 
-    ReadSimulatorThread() : options(), fragSampler(), methLevels(), seqSimulator(), buildAlignments(false)
+    unsigned count;
+    unsigned countI;
+    unsigned countD;
+
+    ReadSimulatorThread() : options(), fragSampler(), methLevels(), seqSimulator(), buildAlignments(false), count(0), countI(0), countD(0)
     {}
 
     ~ReadSimulatorThread()
@@ -668,9 +672,22 @@ public:
 
         for (unsigned i = 0; i < fragmentIds.size(); ++i)
         {
+            if (false) //fragmentIds[i] +1 == 65574 || fragmentIds[i] +1 == 65575 || fragmentIds[i] +1 == 65576)
+            {
+               std::cout << "fragmentId: " << fragmentIds[i] +1 << std::endl;
+               infos[i].debugRead = true; 
+            }
+
             TFragment frag(seq, fragments[i].beginPos, fragments[i].endPos);
             seqSimulator->simulateSingleEnd(seqs[i], quals[i], infos[i], frag, methLevels);
             _setId(ids[i], ss, fragmentIds[i], 0, infos[i]);
+            
+            infos[i].debugRead = false; 
+            count += infos[i].count;
+            countI += infos[i].countI;
+            countD += infos[i].countD;
+
+
             if (buildAlignments)
             {
                 // Build the alignment record itself.
@@ -680,6 +697,7 @@ public:
                 // Set query name.
                 _setId(alignmentRecords[i].qName, ss, fragmentIds[i], 1, infos[i], true);
             }
+            //std::cout << "fragmentId: " << fragmentIds[i] +1 << std::endl;
         }
     }
 
@@ -817,6 +835,10 @@ public:
             if (readSequence(refSeq, vcfMat.faiIndex, rID) != 0)
                 throw MasonIOException("Could not load reference sequence.");
 
+            unsigned countS = 0;
+            unsigned countI = 0;
+            unsigned countD = 0;
+
             while (true)  // Execute as long as there are fragments left.
             {
                 bool doBreak = false;
@@ -833,6 +855,13 @@ public:
                     if (numRead == 0)
                         doBreak = true;
                     threads[tID].fragmentIds.resize(numRead);
+
+                    countS += threads[tID].count;
+                    countI += threads[tID].countI;
+                    countD += threads[tID].countD;
+                    //std::cout << "Thread: Number of seq errors introduced: "  << threads[tID].count<< std::endl;
+                    //std::cout << "Thread: Number of seq insertion errors introduced: "  << threads[tID].countI << std::endl;
+                    //std::cout << "Thread: Number of seq deletion errors introduced: "  << threads[tID].countD << std::endl;
                 }
 
                 // Perform the simulation.
@@ -864,6 +893,9 @@ public:
             }
 
             std::cerr << " (" << contigFragmentCount << " fragments) OK\n";
+            std::cout << "Number of seq errors introduced: "  << countS << std::endl;
+            std::cout << "Number of seq insertion errors introduced: "  << countI << std::endl;
+            std::cout << "Number of seq deletion errors introduced: "  << countD << std::endl;
         }
         std::cerr << "  Done simulating reads.\n";
     }

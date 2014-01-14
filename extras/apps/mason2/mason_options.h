@@ -106,7 +106,9 @@ struct BSSeqOptions
     // The protocol to use for the simulation.
     BSProtocol bsProtocol;
 
-    BSSeqOptions() : verbosity(1), bsSimEnabled(false), bsConversionRate(1.0), bsProtocol(DIRECTIONAL)
+    bool buildGoldSam;
+
+    BSSeqOptions() : verbosity(1), bsSimEnabled(false), bsConversionRate(1.0), bsProtocol(DIRECTIONAL), buildGoldSam(false)
     {}
 
     // Add options to the argument parser.
@@ -413,6 +415,12 @@ struct IlluminaSequencingOptions
     // Standard deviation quality for mismatches at the last base.
     double stdDevMismatchQualityEnd;
 
+    bool uniformSequencingErrors;
+    bool nonSimpleSubstErrors;
+    bool nonSimpleSubstErrorsFrom;
+    bool nonSimpleInsErrors;
+    bool nonSimpleDelErrors;
+
     IlluminaSequencingOptions() :
             verbosity(1),
             readLength(0),
@@ -434,7 +442,12 @@ struct IlluminaSequencingOptions
             meanMismatchQualityBegin(39.5),
             meanMismatchQualityEnd(30),
             stdDevMismatchQualityBegin(3),
-            stdDevMismatchQualityEnd(15)
+            stdDevMismatchQualityEnd(15),
+            uniformSequencingErrors(false),
+            nonSimpleSubstErrors(false),
+            nonSimpleSubstErrorsFrom(false),
+            nonSimpleInsErrors(false),
+            nonSimpleDelErrors(false)
     {}
 
     // Add options to the argument parser.
