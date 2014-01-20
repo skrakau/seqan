@@ -361,7 +361,6 @@ struct MethCallingOptions
     bool outputMethStates;          // Threshold method
 
     String<double>  genPriors;      // Genotype prior probabilities; calculate in 'computeGenotypePriors' 
-    String<String<String<double> > >  bsPriors;       // Meth. state prior probabilities; calculated in 'computeBsPriors'  
 
     // Methylation prior probabilities dependent on context
     // For genotype CC

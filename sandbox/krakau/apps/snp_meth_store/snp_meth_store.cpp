@@ -811,8 +811,6 @@ int detectSNPs(SNPCallingOptions<TSpec> &options, TMethOptions &methOptions)
     if(!empty(methOptions.intervals)) assignIntervalsToContigs(contigIntervals, fragmentStore1, methOptions);
     // Prepare genotype priors
     computeGenotypePriors(methOptions, options);
-    // Prepare meth state priors
-    computeBsPriors(methOptions, options);
     // Store fileName for temp file for each contig, needed later to merge in correct order
     String<CharString> contigTempFileNames;
     resize(contigTempFileNames, length(fragmentStore1.contigStore));
