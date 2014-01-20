@@ -702,7 +702,7 @@ int readMatchesFromSamBam(
     //typedef Gaps<TContigSeq, AnchorGaps<TContigGapAnchors> >    TContigGaps;
     typedef String<typename TFragmentStore::TContigGapAnchor>                                       TContigAnchorGaps;
     typedef Gaps<Nothing, AnchorGaps<TContigAnchorGaps> >                TContigGaps;
-    typedef Gaps<Dna5String, AnchorGaps<TContigAnchorGaps> >                TContigGaps2;
+    
 
     //typedef Gaps<Nothing, AnchorGaps<typename TSAMContext::TContigAnchorGaps> >
     typedef String<typename TFragmentStore::TContigGapAnchor>                                       TContigAnchorGaps;
