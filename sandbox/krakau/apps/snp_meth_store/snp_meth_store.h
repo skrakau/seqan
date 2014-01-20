@@ -30,16 +30,6 @@
 #include <seqan/misc/misc_svg.h>
 #include <seqan/stream.h>
 
-//#include "bs_one_calling.h"
-//#include "meths.h"
-//#include "bs_sep_calling.h"
-
-
-#ifdef CORRECTED_HET
-#include <boost/math/distributions.hpp>
-#endif
- 
-
 namespace seqan {
 
 class Times
@@ -106,8 +96,6 @@ struct SimplePosition
     
     TGPos           gBegin;         // begin position in the genome 
     unsigned        gseqNo;
-
-
 };
 
 template < bool _HAMMING_ONLY = true >
@@ -1447,7 +1435,6 @@ void doCheckRealignCall(
                     printAlignment(std::cout, Raw(), layout, fragStoreGroup, 0, start, end, 0, 150);
                 }
 
-
                 //do realignment
                 doRealigning(fragStoreGroup, groupWindowBegin, groupWindowBegin, file, methOptions, options);   // TODO: do only for reads spanning potential indel position
 
@@ -1536,7 +1523,6 @@ void doSnpAndMethCalling(
     TMatchIterator matchItEnd   = end(matches, Standard()); 
     if (didRealign) matchItEnd--; // exclude reference sequence
 
-    unsigned numReads = length(matches)-1; // exclude reference sequence
     TContigSeq reference = fragmentStore.contigStore[0].seq;
     TContigGaps referenceGaps(fragmentStore.contigStore[0].seq, fragmentStore.contigStore[0].gaps);
 
@@ -1545,11 +1531,10 @@ void doSnpAndMethCalling(
 
     if (didRealign)
     {
+        //unsigned numReads = length(matches)-1; // exclude reference sequence
         //refStart = (TContigPos)fragmentStore.alignedReadStore[numReads].beginPos; TODO
-
         //insertGaps(referenceGaps, 0, refStart); TODO
         refStart = 0;
-
 
         //TContigGaps referenceGapsTemp(fragmentStore.contigStore[0].seq, fragmentStore.alignedReadStore[numReads].gaps);
         //clear(referenceGaps);
@@ -1889,7 +1874,7 @@ void doSnpAndMethCalling(
         unsigned realCoverageR = countR[0] + countR[1] +countR[2] +countR[3] +countR[4];
 
         // too few reads actually cover the position
-        if(positionCoverage < (int)options.minCoverage) 
+        if(positionCoverage < options.minCoverage) 
             isSnp = false;
 
         // is the min. number of different read positions supporting the mutation met?

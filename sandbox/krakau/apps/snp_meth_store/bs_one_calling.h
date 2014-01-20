@@ -20,20 +20,9 @@ Add underconversion rates...
 #include <math.h>
 #include <cmath>
 
-#include <boost/math/tools/tuple.hpp>
-#include <boost/math/tools/roots.hpp>
-
-
-#include "bs_alphabets.h"
-#include "util.h"
-//#include "snp_meth_store.h"
-#include "meths.h"
-
 
 using namespace std;
 using namespace seqan;
-
-
 
 // TODO:
 // precalculate probs and get rid of thousand different cases to check
@@ -404,21 +393,6 @@ inline TCoeffs polynomialMultipl(TCoeffs &coeffs1, TCoeffs &coeffs2)
     return result;
 }
 
-// TODO remove
-template<typename TValue>
-inline void
-assignLHood(TValue &lHood1, TValue const &lHood2)
-{
-    lHood1 = lHood2;
-}
-
-template<typename TValue>
-inline void
-multiplyLHoods(TValue &lHood1, TValue const &lHood2)
-{
-    lHood1 *= lHood2;
-}
-
 
 // Get coeffs for meth cases and (partial) likelihoods for other cases
 template<typename TConstantSet, typename TLHoods, typename TQStrings, typename TMapqs, typename TOriginString, typename TCounts, typename TMethOptions, typename TMethod>
@@ -520,7 +494,7 @@ constructConstantsAndLHoods(TConstantSet &constantSet,
                     else            // XX, no beta to maximize
                     {
                         long double p = 0.5*singleProbs[h1] + 0.5*singleProbs[h2];
-                        multiplyLHoods(lHoods[(h1<<2)|h2], p);
+                        lHoods[(h1<<2)|h2] *= p;
                     }
                 }
             }
@@ -589,7 +563,7 @@ constructConstantsAndLHoods(TConstantSet &constantSet,
                     else            // XX, no beta to maximize
                     {
                         long double p = 0.5*singleProbs[h1] + 0.5*singleProbs[h2];
-                        multiplyLHoods(lHoods[(h1<<2)|h2], p);
+                        lHoods[(h1<<2)|h2] *= p;
                     }
                 }
             }
@@ -742,17 +716,17 @@ getBetasAndLHoods(TBetas &betas, TLHoods &lHoods, TConstantSet &constantSet, TCo
                     guess = (long double)countF[ordValue((Dna)'C')]/(long double)(countF_CT);
                     TLHood lHood;
                     getMaximizingBeta(betas[h1<<2|h2], lHood, constantSet[(h1<<2)|h2], guess, methOptions, TMethod(), TEvalMethod());
-                    assignLHood(lHoods[(h1<<2)|h2], lHood);
+                    lHoods[(h1<<2)|h2] = lHood;
                     // G: lHood from reverse strand reads 
                     guess = (long double)countR[ordValue((Dna)'G')]/(long double)(countR_CT);
                     getMaximizingBeta(betas[h2<<2|h1], lHood, constantSet[(h2<<2)|h1], guess, methOptions, TMethod(), TEvalMethod());
-                    multiplyLHoods(lHoods[(h1<<2)|h2], lHood);
+                    lHoods[(h1<<2)|h2] *= lHood;
                 }
                 else        // if not enough Cs and Ts: do not iterate and set prob to 0
                 {
                     betas[h1<<2|h2] = 666.0;
                     betas[h2<<2|h1] = 666.0;
-                    assignLHood(lHoods[(h1<<2)|h2], (long double)0.0);
+                    lHoods[(h1<<2)|h2] = 0.0;
                }
             }
             else if ( ((Dna)h1 == 'C' && (Dna)h2 == 'T'))
@@ -770,12 +744,12 @@ getBetasAndLHoods(TBetas &betas, TLHoods &lHoods, TConstantSet &constantSet, TCo
                     }
                     getMaximizingBeta(betas[h1<<2|h2], lHood, constantSet[(h1<<2)|h2], guess, methOptions, TMethod(), TEvalMethod());
                     methOptions.helpPrint = false; 
-                    multiplyLHoods(lHoods[(h1<<2)|h2], lHood);
+                    lHoods[(h1<<2)|h2] *= lHood;
                }
                 else        // if not enough Cs and Ts: do not iterate and set prob to 0
                 {
                     betas[h1<<2|h2] = 666.0;
-                    assignLHood(lHoods[(h1<<2)|h2], (long double)0.0);
+                    lHoods[(h1<<2)|h2] + 0.0;
                 }
             }
             else if ( ((Dna)h1 == 'A' && (Dna)h2 == 'G'))
@@ -787,12 +761,12 @@ getBetasAndLHoods(TBetas &betas, TLHoods &lHoods, TConstantSet &constantSet, TCo
                     else guess = 1.0;   // Set to 0.9 to avoid algorithm to get stuck?
                     TLHood lHood;
                     getMaximizingBeta(betas[h1<<2|h2], lHood, constantSet[(h1<<2)|h2], guess, methOptions, TMethod(), TEvalMethod());
-                    multiplyLHoods(lHoods[(h1<<2)|h2], lHood);
+                    lHoods[(h1<<2)|h2] *= lHood;
                }
                 else
                 {
                     betas[h1<<2|h2] = 666.0;
-                    assignLHood(lHoods[(h1<<2)|h2], (long double)0.0);        
+                    lHoods[(h1<<2)|h2] = 0.0;        
                 }
             }
             else if ((Dna)h1 == 'C' || (Dna)h2 == 'C')
@@ -808,12 +782,12 @@ getBetasAndLHoods(TBetas &betas, TLHoods &lHoods, TConstantSet &constantSet, TCo
                     }
                     getMaximizingBeta(betas[h1<<2|h2], lHood, constantSet[(h1<<2)|h2], guess, methOptions, TMethod(), TEvalMethod());
                     methOptions.helpPrint = false; 
-                    multiplyLHoods(lHoods[(h1<<2)|h2], lHood);
+                    lHoods[(h1<<2)|h2] *= lHood;
                }
                 else
                 {
                     betas[h1<<2|h2] = 666.0;
-                    assignLHood(lHoods[(h1<<2)|h2], (long double)0.0);
+                    lHoods[(h1<<2)|h2] = 0.0;
                 }
             }
             else if ((Dna)h1 == 'G' || (Dna)h2 == 'G')
@@ -823,12 +797,12 @@ getBetasAndLHoods(TBetas &betas, TLHoods &lHoods, TConstantSet &constantSet, TCo
                     guess = (long double)countR[ordValue((Dna)'G')]/(long double)(countR_CT);
                     TLHood lHood;
                     getMaximizingBeta(betas[h1<<2|h2], lHood, constantSet[(h1<<2)|h2], guess, methOptions, TMethod(), TEvalMethod());
-                    multiplyLHoods(lHoods[(h1<<2)|h2], lHood);
+                    lHoods[(h1<<2)|h2] *= lHood;
               }
                 else
                 {
                     betas[h1<<2|h2] = 666.0;
-                    assignLHood(lHoods[(h1<<2)|h2], (long double)0.0);
+                    lHoods[(h1<<2)|h2] = 0.0;
                }
             } 
         }
@@ -935,13 +909,12 @@ getCandidateProbs(TProbs &postProbs, TBetas &betas,
     if (methOptions.ignoreBs) // Snp calling without bs conversions
         methOptions.convRate = 0.0;
  
-    // String<long double> lHoods;  // likelihoods to observe observed data under assumption of given genotypes 
+    String<long double> lHoods;  // likelihoods to observe observed data under assumption of given genotypes 
+    String<String<String<long double> > > constantSet;
 
     // Naive and Sampling Method
     if (methOptions.betaSampling && !methOptions.polynomialProbFunction && !methOptions.logSpace)           // sampling, naive, NSpace
     {
-        String<long double> lHoods; 
-        String<String<String<long double> > > constantSet;   
         setUpConstants(constantSet, lHoods, countF, countR, Naive());
         constructConstantsAndLHoods(constantSet, lHoods, qualF, qualR, mapqsF, mapqsR, originStringF, originStringR, countF, countR, methOptions, Naive());
         getBetasAndLHoods(betas, lHoods, constantSet, countF, countR, methOptions, Sampling(), Naive(), refContext.pos);
@@ -950,8 +923,6 @@ getCandidateProbs(TProbs &postProbs, TBetas &betas,
     else if (!methOptions.betaSampling && !methOptions.polynomialProbFunction && !methOptions.logSpace)   // Newton, logFunction, NSpace
     {
         //std::cout << " Run with LogFunction ...................................................!" << std::endl;
-        String<long double> lHoods;
-        String<String<String<long double> > > constantSet;  
         setUpConstants(constantSet, lHoods, countF, countR, LogFunction());
         constructConstantsAndLHoods(constantSet, lHoods, qualF, qualR, mapqsF, mapqsR, originStringF, originStringR, countF, countR, methOptions, LogFunction());
         getBetasAndLHoods(betas, lHoods, constantSet, countF, countR, methOptions, Newton(), LogFunction(), refContext.pos);

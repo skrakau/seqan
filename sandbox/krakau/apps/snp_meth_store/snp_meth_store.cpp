@@ -28,19 +28,11 @@
 #include <seqan/bam_io.h>
 #include <seqan/parallel.h>
 
-
 #ifdef PLATFORM_WINDOWS
 #define SEQAN_DEFAULT_TMPDIR "C:\\TEMP\\"
 #else
 #define SEQAN_DEFAULT_TMPDIR "./"
 #endif
-
- 
-//#include "../../../extras/apps/rep_sep/utils.h"
-//#include "../../../extras/apps/rep_sep/assembly_parser.h"
-//#include "../../../extras/apps/rep_sep/column_scanner.h"
-//#include "../../../extras/apps/rep_sep/rgraph.h"
-//#include "../../../extras/apps/rep_sep/rep_sep.h"
 
 #include <cmath>
 #include <iostream>
@@ -49,13 +41,14 @@
 #include <map>
 #include <seqan/arg_parse.h>
 
+#include <boost/math/tools/tuple.hpp>
+#include <boost/math/tools/roots.hpp>
+
 #include "bs_alphabets.h"
-//#include "util.h"
+#include "util.h"
 #include "bs_realignment.h"
 #include "snp_meth_store.h"
 #include "bs_one_calling.h"
-
-#include "meths.h"
 
 using namespace std;
 using namespace seqan;
