@@ -4,23 +4,6 @@ Methylation Calling
 
 ==========================================================================*/
 
-// TODO 
-// create more test datasets
-// create tests
-// check genotype priors excatly
-// inline ?
-
-// Ranges to define methylation states: take possible sequencing errors into account -> lower/upper bounds
-// Create meth. options
-// User specifications
-// methylation frequencies...homo, hetero, ...? -> corresponding to bs_mason options
-// user specific: calculate probs. or call state by threshold method
-// user specific: look for ASMs ?
-// option for methCalling without snpCalling ?
-// 
-// write function to set up parameters...
-
-
 #ifndef __SANDBOX_KRAKAU_APPS_SNP_METH_STORE_METHS_H__
 #define __SANDBOX_KRAKAU_APPS_SNP_METH_STORE_METHS_H__
 
@@ -30,25 +13,10 @@ Methylation Calling
 #include <cmath>
 
 #include "bs_alphabets.h"
-//#include "snp_meth_store.h"
 #include "meths.h"
-//#include "bs_sep_calling.h"
-//#include "bs_one_calling.h"
-
 
 using namespace std;
 using namespace seqan;
-
-// ============================================================================
-// Enums, Tags, Classes.
-// ============================================================================
-
-
-
-
-// ============================================================================
-// Functions.
-// ============================================================================
 
 
 template<typename TDna>
