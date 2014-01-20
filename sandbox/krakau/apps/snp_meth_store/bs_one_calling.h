@@ -911,7 +911,7 @@ computePostProbs(TPostProbs &postProbs, TLHoods &lHoods, TRefContext &refContext
             if(options._debugLevel > 1)
                 std::cout << (Dna)refContext.refAllele << (Dna)h1 << (Dna)h2 << "  " << std::setprecision (25) << "genPrior: " << std::setprecision (25) << (long double)methOptions.genPriors[ refContext.refAllele<<4| ordValue((Dna)((DnaM)h1))<<2 | ordValue((Dna)((DnaM)h2))] << "  lHood  " << (long double)lHoods[(h1<<2)| h2] << std::endl;
             
-            // TODO take bsPriors into account, take context into account !!!
+            // future: maybe take bsPriors into account, take context into account !!!
             postProbs[(h1<<2)| h2] = methOptions.genPriors[ refContext.refAllele<<4| h1<<2 | h2] * lHoods[(h1<<2)| h2] / obsBasesProb;   
 
             if(options._debugLevel > 1)

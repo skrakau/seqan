@@ -362,27 +362,6 @@ struct MethCallingOptions
 
     String<double>  genPriors;      // Genotype prior probabilities; calculate in 'computeGenotypePriors' 
 
-    // Methylation prior probabilities dependent on context
-    // For genotype CC
-    double homoMethPriorCG;
-    double homoNonMethPriorCG;
-    double heteroMethPriorCG;
-    double homoMethPriorCHG;
-    double homoNonMethPriorCHG;
-    double heteroMethPriorCHG;
-    double homoMethPriorCHH;
-    double homoNonMethPriorCHH;
-    double heteroMethPriorCHH;
-    // For genotype CX
-    // With ref. base C
-    double cxRefCMethPriorCG;
-    double cxRefCMethPriorCHG;
-    double cxRefCMethPriorCHH;
-    // With ref. base non-C
-    double cxRefXMethPriorCG;
-    double cxRefXMethPriorCHG;
-    double cxRefXMethPriorCHH;
-
     bool outputCandidates;
     bool outputAllBsStateProbs;
 
@@ -447,27 +426,6 @@ struct MethCallingOptions
 
         outputMethProbs(true),
         outputMethStates(true),
-
-        // Highly dependent on genome
-        homoMethPriorCG(0.78),
-        homoNonMethPriorCG(0.14),
-        heteroMethPriorCG(0.08),
-        homoMethPriorCHG(0.07),
-        homoNonMethPriorCHG(0.90),
-        heteroMethPriorCHG(0.03),
-        homoMethPriorCHH(0.02),
-        homoNonMethPriorCHH(0.975),
-        heteroMethPriorCHH(0.005),
-
-        // For genotype CX
-        // With ref. base C  
-        cxRefCMethPriorCG(0.82),
-        cxRefCMethPriorCHG(0.08),
-        cxRefCMethPriorCHH(0.03),
-        // With ref. base non-C
-        cxRefXMethPriorCG(0.04), 
-        cxRefXMethPriorCHG(0.01),
-        cxRefXMethPriorCHH(0.01),
 
         outputCandidates(false),
         outputAllBsStateProbs(true),
