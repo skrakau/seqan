@@ -61,7 +61,7 @@ readBedRecord2(double &methLevelTop, double &methLevelBottom, unsigned &cov, TRe
     readUntilWhitespace(helper, reader);        // Meth. level
     CharString methLevel = helper;
 
-    skipWhitespaces(reader);
+skipWhitespaces(reader);
     clear(helper);
     readUntilWhitespace(helper, reader);     // Coverage
     cov = lexicalCast<unsigned>(helper);

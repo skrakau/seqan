@@ -40,24 +40,8 @@
 #include <seqan/arg_parse.h>
 
 #include "benchmark_calls.h"
-#include "benchmark_calls_2.h"
-#include "benchmark_calls_level.h"
-#include "benchmark_calls_vs_snpstore.h"
 #include "benchmark_calls_vs_bissnp.h"
 #include "parse_meth_level.h"
-
-
-// ==========================================================================
-// Classes
-// ==========================================================================
-
-// --------------------------------------------------------------------------
-// Class AppOptions
-// --------------------------------------------------------------------------
-
-// This struct stores the options from the command line.
-//
-// You might want to rename this to reflect the name of your app.
 
 struct Options
 {
@@ -69,22 +53,22 @@ struct Options
     CharString simSnpsFile;
     CharString simMethsFile;
     CharString calledSnpsFile;
-    CharString snpStoreFile;
     CharString bisSnpFile;
     CharString bedFile;
     unsigned minCovMeth;    // min coverage to benchmark methylation level
     bool methFASTA;
+    int simulatedAtRefN;
 
     CharString outputFile;
 
     Options() :
         verbosity(1),
         simMethsFile(""),
-        snpStoreFile(""),
         bisSnpFile(""),
         bedFile(""),
         minCovMeth(2),
         methFASTA(false),
+        simulatedAtRefN(0),
         outputFile("")
     {}
 };
@@ -118,12 +102,13 @@ parseCommandLine(Options & options, int argc, char const ** argv)
     addOption(parser, ArgParseOption("s", "sim-snps-file", "Path to simulated snps file.", ArgParseOption::STRING));
     addOption(parser, ArgParseOption("m", "sim-meths-file", "Path to simulated meth states file.", ArgParseOption::STRING));
     addOption(parser, ArgParseOption("c", "called-snps-file", "Path to called snps file.", ArgParseOption::STRING));
-    addOption(parser, ArgParseOption("ss", "snp-store-file", "Path to snpStore output file.", ArgParseOption::STRING));
     addOption(parser, ArgParseOption("bis", "bis-snp-file", "Path to BisSNP output file.", ArgParseOption::STRING));
     addOption(parser, ArgParseOption("bed", "bed-file", "Path to BED output file.", ArgParseOption::STRING));
     addOption(parser, ArgParseOption("mcm", "min-cov-meth", "Minimal coverage to benchmark meth level.", ArgParseOption::INTEGER));
     addOption(parser, ArgParseOption("o", "output-file", "Path to output file.", ArgParseOption::STRING));
     addOption(parser, ArgParseOption("mf", "meth-fasta", "Simulated methylation levels are given in FASTA format."));
+    addOption(parser, ArgParseOption("sn", "sim-at-n", "Number of simulated SNPs at reference N positions (not counted as false negatives).", ArgParseOption::INTEGER));
+
 
     // Add Examples Section.
     addTextSection(parser, "Examples");
@@ -149,22 +134,17 @@ parseCommandLine(Options & options, int argc, char const ** argv)
     getOptionValue(options.simSnpsFile, parser, "sim-snps-file");
     getOptionValue(options.simMethsFile, parser, "sim-meths-file");
     getOptionValue(options.calledSnpsFile, parser, "called-snps-file");
-    getOptionValue(options.snpStoreFile, parser, "snp-store-file");
     getOptionValue(options.bisSnpFile, parser, "bis-snp-file");
     getOptionValue(options.bedFile, parser, "bed-file");
     getOptionValue(options.minCovMeth, parser, "min-cov-meth");
     getOptionValue(options.outputFile, parser, "output-file");
     if (isSet(parser, "meth-fasta"))
         options.methFASTA = true;
+    getOptionValue(options.simulatedAtRefN, parser, "sim-at-n");
 
     return ArgumentParser::PARSE_OK;
 }
 
-// --------------------------------------------------------------------------
-// Function main()
-// --------------------------------------------------------------------------
-
-// Program entry point.
 
 int main(int argc, char const ** argv)
 {
@@ -172,10 +152,6 @@ int main(int argc, char const ** argv)
     seqan::ArgumentParser parser;
     Options options;
     seqan::ArgumentParser::ParseResult res = parseCommandLine(options, argc, argv);
-
-    // If there was an error parsing or built-in argument parser functionality
-    // was triggered then we exit the program.  The return code is 1 if there
-    // were errors and 0 if there were none.
     if (res != seqan::ArgumentParser::PARSE_OK)
         return res == seqan::ArgumentParser::PARSE_ERROR;
 
@@ -188,19 +164,17 @@ int main(int argc, char const ** argv)
         std::cout << "__OPTIONS____________________________________________________________________\n"
                   << '\n'
                   << "VERBOSITY\t" << options.verbosity << '\n'
-                  //<< "TEXT     \t" << options.text << "\n\n"
                   << "sim-snps-file: \t" << options.simSnpsFile << '\n'
                   << "sim-meths-file: \t" << options.simMethsFile << '\n'
                   << "called-snps-file: \t" << options.calledSnpsFile << '\n'
-                  << "snp-store-file: \t" << options.snpStoreFile << '\n'
                   << "bis-snp-file: \t" << options.bisSnpFile << '\n'
                   << "bed-file: \t" << options.bedFile << '\n'
                   << "min-cov-meth: \t" << options.minCovMeth << '\n'
-                  << "output-file: \t" << options.outputFile << '\n';
+                  << "output-file: \t" << options.outputFile << '\n'
+                  << "sim-at-N: \t" << options.simulatedAtRefN << '\n';
     }
     
     if (options.bisSnpFile != "") benchmark_bisSNP(options);
-    else if (!options.methFASTA) benchmark(options, SnpCustom(), MethCustom());
     else benchmark(options, SnpMason2(), MethMason2());
 
     // Write out simulated vs. called meth. levels for plot
