@@ -684,23 +684,6 @@ bool benchmark_bisSNP(TOptions &options)
     if (!out.good())
         std::cerr << " ERROR: Could not open output file!\n";
 
-    out<< '\n';
-    unsigned trueNegatives = maxPos - c_FalsePositive;  
-    out<< "Specificity: "  << (double)trueNegatives/(double)(trueNegatives + c_FalsePositive) <<  '\n';
-    out<< "Recall: " << (double)c_RightCalled/(double)(c_RightCalled + c_WrongCalled + c_NotCalled + c_NotListed) << '\n';
-    out<< "Precision: "  << (double)c_RightCalled /(double)(c_RightCalled + c_FalsePositive + c_WrongCalled) <<  '\n';
-
-    out << "Simulated snps: \t" << c_SimSnps << '\n';
-    out<< "Called snps: \t" << c_CalledSnps << '\n';
-    out<< '\n';
-    out<< "Not listed: \t" << c_NotListed << '\n';
-    out<< "Not called: \t" << c_NotCalled << '\n';
-    out<< "False positive: \t" << c_FalsePositive << '\n';
-    out<< "False positive at meth positions: \t" << c_FalsePositiveAtMeth << '\n';
-    out<< "Wrong called genotype: \t" << c_WrongCalled << '\n'; 
-    out<< "Right called genotype: \t" << c_RightCalled << '\n';
-
-    out<< '\n';
     out << "Bis-SNP:" << '\n';
     unsigned bisSNP_trueNegatives = maxPos - c_bisSNPFalsePositive;  
     out<< "Specificity: "  << (double)bisSNP_trueNegatives/(double)(bisSNP_trueNegatives + c_bisSNPFalsePositive) <<  '\n';
@@ -716,6 +699,24 @@ bool benchmark_bisSNP(TOptions &options)
      out << "Right called genotype: \t" << c_bisSNPRightCalled << '\n';
      out << '\n';
 
+    out<< '\n';
+    out << "Me:" << '\n';
+    unsigned trueNegatives = maxPos - c_FalsePositive; 
+    out<< "Specificity: "  << (double)trueNegatives/(double)(trueNegatives + c_FalsePositive) <<  '\n';
+    out<< "Recall: " << (double)c_RightCalled/(double)(c_RightCalled + c_WrongCalled + c_NotCalled + c_NotListed) << '\n';
+    out<< "Precision: "  << (double)c_RightCalled /(double)(c_RightCalled + c_FalsePositive + c_WrongCalled) <<  '\n';
+
+    out << "Simulated snps: \t" << c_SimSnps << '\n';
+    out<< "Called snps: \t" << c_CalledSnps << '\n';
+    out<< '\n';
+    out<< "Not listed: \t" << c_NotListed << '\n';
+    out<< "Not called: \t" << c_NotCalled << '\n';
+    out<< "False positive: \t" << c_FalsePositive << '\n';
+    out<< "False positive at meth positions: \t" << c_FalsePositiveAtMeth << '\n';
+    out<< "Wrong called genotype: \t" << c_WrongCalled << '\n'; 
+    out<< "Right called genotype: \t" << c_RightCalled << '\n';
+
+    out<< '\n';
     out<< '\n';
 
      out << '\n';
