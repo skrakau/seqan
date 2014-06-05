@@ -121,9 +121,9 @@ reAlign4(TReadGaps &readGaps,
     unsigned mismatches = 0;
     unsigned matches = 0;
  
-    if (false)
+    if (store.readNameStore[store.alignedReadStore[id].readId] == "siumulated_1.15")
     {
-        std::cout << "align: (reAlign4 2) " << store.readNameStore[store.alignedReadStore[id].readId] << std::endl;
+        std::cout << "align: " << store.readNameStore[store.alignedReadStore[id].readId]  << std::endl;
         std::cout << contigGaps << std::endl;
         std::cout << readGaps << std::endl;
     }
@@ -1081,7 +1081,7 @@ postProcessMain(TOptions &options, TModel const &)
     typedef String<TMatchMateInfo>                                                  TMatchMateInfos;
 
     // Initialize aligment scores
-    typedef long double TValue;
+    typedef double TValue;
     typedef Score<TValue, BsTagList<BsCaseCT, TModel, Left> >           TBsScoreCTLeft;
     typedef Score<TValue, BsTagList<BsCaseCT, TModel, Right> >          TBsScoreCTRight;
     typedef Score<TValue, BsTagList<BsCaseGA, TModel, Left> >           TBsScoreGALeft;
