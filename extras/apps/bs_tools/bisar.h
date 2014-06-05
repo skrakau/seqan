@@ -121,7 +121,7 @@ reAlign4(TReadGaps &readGaps,
     unsigned mismatches = 0;
     unsigned matches = 0;
  
-    if (store.readNameStore[store.alignedReadStore[id].readId] == "simulated_1.15")
+    if (store.readNameStore[store.alignedReadStore[id].readId] == "simulated_1.15" || store.readNameStore[store.alignedReadStore[id].readId] == "simulated_1.78" )
     {
         std::cout << "align: " << store.readNameStore[store.alignedReadStore[id].readId]  << std::endl;
         std::cout << contigGaps << std::endl;
@@ -244,7 +244,7 @@ writeBsAlignment(TStream & stream,
     }
     TReadGaps readGaps(record.seq, store.alignedReadStore[bestId].gaps);
 
-    if (record.qName == "simulated_1.15")
+    if (record.qName == "simulated_1.15" || record.qName == "simulated_1.78")
     {
         std::cout << "  write:  ";
         std::cout << "align:   errors: " << static_cast<unsigned int>(store.alignQualityStore[bestId].errors) << std::endl;
@@ -257,7 +257,7 @@ writeBsAlignment(TStream & stream,
     getMDString(md, contigGaps, readGaps);
     record.cigar = cigar;
 
-    if (record.qName == "simulated_1.15")
+    if (record.qName == "simulated_1.15"  || record.qName == "simulated_1.78")
     {
         std::cout << "  cigar:  ";
         for (unsigned i = 0; i < length(record.cigar); ++i)
