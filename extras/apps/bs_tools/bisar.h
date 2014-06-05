@@ -121,7 +121,7 @@ reAlign4(TReadGaps &readGaps,
     unsigned mismatches = 0;
     unsigned matches = 0;
  
-    if (store.readNameStore[store.alignedReadStore[id].readId] == "siumulated_1.15")
+    if (store.readNameStore[store.alignedReadStore[id].readId] == "simulated_1.15")
     {
         std::cout << "align: " << store.readNameStore[store.alignedReadStore[id].readId]  << std::endl;
         std::cout << contigGaps << std::endl;
