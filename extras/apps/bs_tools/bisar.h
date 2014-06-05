@@ -1081,7 +1081,7 @@ postProcessMain(TOptions &options, TModel const &)
     typedef String<TMatchMateInfo>                                                  TMatchMateInfos;
 
     // Initialize aligment scores
-    typedef long long double TValue;
+    typedef long double TValue;
     typedef Score<TValue, BsTagList<BsCaseCT, TModel, Left> >           TBsScoreCTLeft;
     typedef Score<TValue, BsTagList<BsCaseCT, TModel, Right> >          TBsScoreCTRight;
     typedef Score<TValue, BsTagList<BsCaseGA, TModel, Left> >           TBsScoreGALeft;
