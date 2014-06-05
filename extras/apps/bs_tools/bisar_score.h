@@ -466,7 +466,7 @@ public:
         std::cout << std::endl;
         std::cout << "(*this).data_gap_open_ref[32]: ";
         for (unsigned i = 0; i < length((*this).data_gap_open_ref[32]); ++i)
-            std::cout << (*this).data_gap_open_ref[32][i];
+            std::cout << std::setprecision (15) << (*this).data_gap_open_ref[32][i];
         std::cout << std::endl;
     }
 };
@@ -484,7 +484,7 @@ scoreGapOpenVertical(
 { 
     unsigned int qual = getQualityValue(seqVVal); 
     unsigned int j = (Dna5)seqVVal;  // Read base
-    std::cout << "g:" << std::log10(me.data_gap_open_ref[qual][j]) << " ";
+    std::cout << "g:" << std::setprecision (15) << std::log10(me.data_gap_open_ref[qual][j]) << " ";
 
     return std::log10(me.data_gap_open_ref[qual][j]);
 }
@@ -552,7 +552,7 @@ score(Score<TValue, BsTagList<TBsCase, TModel, TSegment> > const & sc, TVal1 val
     int qual = getQualityValue(val2);  
 
     //std::cout << "qual: " << qual << std::endl;
-    std::cout << "m:" << std::log10(sc.data[qual][i][j]) << " ";
+    std::cout << "m:" << std::setprecision (15) << std::log10(sc.data[qual][i][j]) << " ";
 
     return std::log10(sc.data[qual][i][j]); 
 }
