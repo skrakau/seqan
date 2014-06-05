@@ -60,6 +60,10 @@ add_executable (casbar casbar.cpp
 add_executable (four2three four2three.cpp
                     four2three.h)
 
+set_target_properties(bisar PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
+set_target_properties(casbar PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
+
+
 # Add dependencies found by find_package (SeqAn).
 target_link_libraries (bisar ${SEQAN_LIBRARIES})
 target_link_libraries (casbar ${Boost_LIBRARIES} ${SEQAN_LIBRARIES})

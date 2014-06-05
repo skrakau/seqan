@@ -10,7 +10,7 @@ template<>
 struct FragmentStoreConfig<MyFragmentStoreConfig> :
 	public FragmentStoreConfig<>
 {
-	typedef double		TMappingQuality;    // ?
+	typedef double	TMappingQuality;    // ?
 };
 
 template <typename T = void>
@@ -80,7 +80,7 @@ computeBsScores(TScore &sc_data,
     resize(sc_data, 63, Exact());
     for (unsigned q = 0; q < 63; ++q)
     {
-        long double e = pow(10, -(long double)q/10.0); 
+        long double e = pow(10L, -(long double)q/10.0); 
 
         resize(sc_data[q], 5, Exact());
         for (unsigned i = 0; i < 5; ++i)    // Ref base
@@ -113,7 +113,7 @@ computeBsScores(TScore &sc_data,
     resize(sc_data, 63, Exact());
     for (unsigned q = 0; q < 63; ++q)
     {
-        long double e = pow(10, -(long double)q/10.0); 
+        long double e = pow(10L, -(long double)q/10.0); 
 
         resize(sc_data[q], 5, Exact());
         for (unsigned i = 0; i < 5; ++i)    // Ref base
@@ -144,7 +144,7 @@ computeBsScores(TScore &sc_data,
     resize(sc_data, 63, Exact());
     for (unsigned q = 0; q < 63; ++q)
     {
-        long double e = pow(10, -(long double)q/10.0); 
+        long double e = pow(10L, -(long double)q/10.0); 
 
         resize(sc_data[q], 5, Exact());
         for (unsigned i = 0; i < 5; ++i)    // Ref base
@@ -175,7 +175,7 @@ computeBsScores(TScore &sc_data,
     resize(sc_data, 63, Exact());
     for (unsigned q = 0; q < 63; ++q)
     {
-        long double e = pow(10, -(long double)q/10.0); 
+        long double e = pow(10L, -(long double)q/10.0); 
 
         resize(sc_data[q], 5, Exact());
         for (unsigned i = 0; i < 5; ++i)    // Ref base
@@ -310,7 +310,7 @@ computeRefGapScores(TScores &sc_data,
     resize(sc_data, 63, Exact());
     for (unsigned q = 0; q < 63; ++q)
     {
-        long double e = pow(10, -(long double)q/10.0); 
+        long double e = pow(10L, -(long double)q/10.0); 
 
         resize(sc_data[q], 5, Exact());
         for (unsigned b = 0; b < 5; ++b)    // Base which is assumed to be inserted
@@ -339,7 +339,7 @@ computeRefGapScores(TScores &sc_data,
     resize(sc_data, 63, Exact());
     for (unsigned q = 0; q < 63; ++q)
     {
-        long double e = pow(10, -(long double)q/10.0); 
+        long double e = pow(10L, -(long double)q/10.0); 
 
         resize(sc_data[q], 5, Exact());
         for (unsigned b = 0; b < 5; ++b)    // Base which is assumed to be inserted
@@ -368,7 +368,7 @@ computeRefGapScores(TScores &sc_data,
     resize(sc_data, 63, Exact());
     for (unsigned q = 0; q < 63; ++q)
     {
-        long double e = pow(10, -(long double)q/10.0); 
+        long double e = pow(10L, -(long double)q/10.0); 
 
         resize(sc_data[q], 5, Exact());
         for (unsigned b = 0; b < 5; ++b)    // Base which is assumed to be inserted
@@ -396,7 +396,7 @@ computeRefGapScores(TScores &sc_data,
     resize(sc_data, 63, Exact());
     for (unsigned q = 0; q < 63; ++q)
     {
-        long double e = pow(10, -(long double)q/10.0); 
+        long double e = pow(10L, -(long double)q/10.0); 
 
         resize(sc_data[q], 5, Exact());
         for (unsigned b = 0; b < 5; ++b)    // Base which is assumed to be inserted
