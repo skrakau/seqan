@@ -467,7 +467,7 @@ computePseudoWorstScore(TScore &score, TReadSeq &readSeq, TOptions &options)
     }
     for (unsigned i = 0; i < length(lowQuals); ++i)
     {
-        long double e = pow(10, -(long double)lowQuals[i]/10.0);
+        long double e = pow(10L, -(long double)lowQuals[i]/10.0);
         if (e == 1) e = 0.9;    // e.g. in case of Ns: take as low probability into account
         score += std::log10((((options.seqIdentity-options.refNRate)/4.0)/(1.0/16.0))*options.pseudoMatchScale*(1.0 - e) );
     }
@@ -491,7 +491,7 @@ computePseudoWorstScore2(TScore &score, TReadSeq &readSeq, TOptions &options)
     unsigned pseudoErrors = max3Errors + 1;
     score = 0;
     score += pseudoErrors * options.gapOpenScore; //std::log10((0.01/12.0)/(1.0/16.0)); //options.scoreMismatch; // ??? (-1.0);   // Assumed mismatches
-    double e = pow(10, -(long double)avgQual/10.0);
+    double long e = pow(10L, -(long double)avgQual/10.0);
     score += (length(readSeq) - pseudoErrors) * std::log10((((options.seqIdentity-options.refNRate)/4.0)/(1.0/16.0))*options.pseudoMatchScale*(1.0 - e) ); // std::log10(((0.99/4.0)/(1.0/16.0))*(1.0 - e) + (((0.01/12.0)/(1.0/16.0)))*e);   // Assumed matches
     //score -= length(readSeq);
     score *= -10;
@@ -1081,7 +1081,7 @@ postProcessMain(TOptions &options, TModel const &)
     typedef String<TMatchMateInfo>                                                  TMatchMateInfos;
 
     // Initialize aligment scores
-    typedef double  TValue;
+    typedef long long double TValue;
     typedef Score<TValue, BsTagList<BsCaseCT, TModel, Left> >           TBsScoreCTLeft;
     typedef Score<TValue, BsTagList<BsCaseCT, TModel, Right> >          TBsScoreCTRight;
     typedef Score<TValue, BsTagList<BsCaseGA, TModel, Left> >           TBsScoreGALeft;
