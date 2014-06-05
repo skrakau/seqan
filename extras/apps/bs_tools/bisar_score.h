@@ -1,6 +1,7 @@
 #ifndef CORE_APPS_BS_TOOLS_BISAR_SCORE_H_
 #define CORE_APPS_BS_TOOLS_BISAR_SCORE_H_
 
+#include <limits>
 
 namespace seqan {
 
@@ -466,7 +467,7 @@ public:
         std::cout << std::endl;
         std::cout << "(*this).data_gap_open_ref[32]: ";
         for (unsigned i = 0; i < length((*this).data_gap_open_ref[32]); ++i)
-            std::cout << std::setprecision (15) << (*this).data_gap_open_ref[32][i];
+            std::cout << std::setprecision (std::numeric_limits<double>::digits10 + 1) << (*this).data_gap_open_ref[32][i];
         std::cout << std::endl;
     }
 };
@@ -484,7 +485,7 @@ scoreGapOpenVertical(
 { 
     unsigned int qual = getQualityValue(seqVVal); 
     unsigned int j = (Dna5)seqVVal;  // Read base
-    std::cout << "g:" << std::setprecision (15) << std::log10(me.data_gap_open_ref[qual][j]) << " ";
+    std::cout << "g:" << std::setprecision (std::numeric_limits<double>::digits10 + 1) << std::log10(me.data_gap_open_ref[qual][j]) << " ";
 
     return std::log10(me.data_gap_open_ref[qual][j]);
 }
