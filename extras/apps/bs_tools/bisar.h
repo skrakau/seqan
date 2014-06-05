@@ -244,6 +244,15 @@ writeBsAlignment(TStream & stream,
     }
     TReadGaps readGaps(record.seq, store.alignedReadStore[bestId].gaps);
 
+    if (record.qName == "simulated_1.15")
+    {
+        std::cout << "  write:  ";
+        std::cout << "align:   errors: " << static_cast<unsigned int>(store.alignQualityStore[bestId].errors) << std::endl;
+        //std::cout << "Contig: " <<  contigGaps.data_cutBegin << "  " << contigGaps.data_cutEnd << "  " << contigGaps.data_viewCutBegin << "  " << contigGaps.data_viewCutEnd << std::endl;
+        std::cout << "contig: " << contigGaps << std::endl;
+        std::cout << "read:   " << readGaps << std::endl;
+    }
+
     getCigarString(cigar, contigGaps, readGaps);
     getMDString(md, contigGaps, readGaps);
     record.cigar = cigar;
