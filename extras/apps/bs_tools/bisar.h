@@ -259,16 +259,12 @@ writeBsAlignment(TStream & stream,
 
     if (record.qName == "simulated_1.15")
     {
+        std::cout << "  cigar:  ";
         for (unsigned i = 0; i < length(record.cigar); ++i)
         {
-            int res = 0;
-            res = streamPut(stream, record.cigar[i].count);
-            if (res != 0)
-                return res;
+            std::cout << record.cigar[i].count;
 
-            res = streamPut(stream, record.cigar[i].operation);
-            if (res != 0)
-                return res;
+            std::cout << record.cigar[i].operation;
         }
        std::cout << std::endl;;
     }
