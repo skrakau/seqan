@@ -261,6 +261,7 @@ writeBsAlignment(TStream & stream,
     {
         for (unsigned i = 0; i < length(record.cigar); ++i)
         {
+            int res = 0;
             res = streamPut(stream, record.cigar[i].count);
             if (res != 0)
                 return res;
