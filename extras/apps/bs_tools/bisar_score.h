@@ -464,11 +464,6 @@ public:
         computeRefGapScores((*this).data_gap_open_ref, options.gapOpenScore, insErrorFreqs, seqErrorFreqs, options, TBsCase(), TSegment());
         computeRefGapScores((*this).data_gap_extend_ref, options.gapExtendScore, insErrorFreqs, seqErrorFreqs, options, TBsCase(), TSegment());
 
-        std::cout << std::endl;
-        std::cout << "(*this).data_gap_open_ref[32]: ";
-        for (unsigned i = 0; i < length((*this).data_gap_open_ref[32]); ++i)
-            std::cout << std::setprecision (std::numeric_limits<double>::digits10 + 1) << (*this).data_gap_open_ref[32][i];
-        std::cout << std::endl;
     }
 };
 
@@ -553,7 +548,7 @@ score(Score<TValue, BsTagList<TBsCase, TModel, TSegment> > const & sc, TVal1 val
     int qual = getQualityValue(val2);  
 
     //std::cout << "qual: " << qual << std::endl;
-    std::cout << "m:" << std::setprecision (15) << std::log10(sc.data[qual][i][j]) << " ";
+    std::cout << "m:" << "g:" << std::setprecision (std::numeric_limits<double>::digits10 + 1) << std::log10(sc.data[qual][i][j]) << " ";
 
     return std::log10(sc.data[qual][i][j]); 
 }
