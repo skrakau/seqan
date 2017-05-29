@@ -146,7 +146,7 @@ public:
     std::vector<TFuture>         threads;
 
     basic_bgzf_streambuf(ostream_reference ostream_,
-                         size_t numThreads = 16,
+                         size_t numThreads = 1,
                          size_t jobsPerThread = 8) :
         numThreads(numThreads),
         numJobs(numThreads * jobsPerThread),
@@ -494,7 +494,7 @@ public:
     TBuffer              putbackBuffer;
 
     basic_unbgzf_streambuf(istream_reference istream_,
-                           size_t numThreads = 16,
+                           size_t numThreads = 1,
                            size_t jobsPerThread = 8) :
         serializer(istream_),
         numThreads(numThreads),
